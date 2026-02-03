@@ -1,4 +1,4 @@
-# cts-MageCK: Cell-Type-Multiplexed CRISPR Screen Analysis
+# ctm-MageCK: Cell-Type-Multiplexed CRISPR Screen Analysis
 
 **Version:** 1.0.0
 **Status:** Production Ready ✅
@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-**cts-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the industry-standard MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
+**ctm-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the industry-standard MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
 
 ### Key Capabilities
 
@@ -60,8 +60,8 @@ conda create -n py37 python=3.7
 conda activate py37
 pip install mageck
 
-conda create -n cts-mageck python=3.12
-conda activate cts-mageck
+conda create -n ctm-mageck python=3.12
+conda activate ctm-mageck
 pip install numpy pandas matplotlib seaborn scipy pyyaml matplotlib-venn
 
 # 2. Prepare experiment configuration
@@ -108,8 +108,8 @@ python scripts/post_analysis_visualization_mle.py \
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/cts-mageck.git
-cd cts-mageck
+git clone https://github.com/your-org/ctm-mageck.git
+cd ctm-mageck
 
 # Create conda environment for MAGeCK (Python 3.7)
 conda create -n py37 python=3.7
@@ -120,8 +120,8 @@ pip install mageck
 mageck test --version
 
 # Create separate environment for pipeline scripts (Python 3.12)
-conda create -n cts-mageck python=3.12
-conda activate cts-mageck
+conda create -n ctm-mageck python=3.12
+conda activate ctm-mageck
 pip install numpy pandas matplotlib seaborn scipy pyyaml matplotlib-venn
 
 # Verify installation
@@ -450,11 +450,11 @@ conditions:
 
 ---
 
-## 🆚 Why cts-MageCK?
+## 🆚 Why ctm-MageCK?
 
 ### vs. Standard MAGeCK
 
-| Feature | Standard MAGeCK | cts-MageCK |
+| Feature | Standard MAGeCK | ctm-MageCK |
 |---------|-----------------|------------|
 | Cell-type demultiplexing | ❌ Manual | ✅ Automated (O(1) speed) |
 | Multi-cell-type support | ❌ Separate runs | ✅ Integrated workflow |
@@ -473,9 +473,9 @@ conditions:
 
 ## 📚 Citation
 
-If you use cts-MageCK in your research, please cite:
+If you use ctm-MageCK in your research, please cite:
 
-**cts-MageCK:**
+**ctm-MageCK:**
 ```
 [Your publication here]
 ```
@@ -550,7 +550,7 @@ doi:10.1186/s13059-015-0843-6
 ## 👥 Support
 
 For questions, issues, or feature requests:
-- **GitHub Issues:** https://github.com/your-org/cts-mageck/issues
+- **GitHub Issues:** https://github.com/your-org/ctm-mageck/issues
 - **Email:** support@your-institution.edu
 
 ---
@@ -561,7 +561,7 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**cts-MageCK v1.0.0** - Production-Ready Cell-Type-Specific CRISPR Screen Analysis
+**ctm-MageCK v1.0.0** - Production-Ready Cell-Type-Specific CRISPR Screen Analysis
 *Ultra-fast demultiplexing + Gold-standard MAGeCK statistics*
 
 **Last Updated:** 2026-02-03
