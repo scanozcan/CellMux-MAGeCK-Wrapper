@@ -1,0 +1,5 @@
+CellType	Read_Count	Percentage	Expected_Barcode
+Endothelial	1594798	18.34	ATAGCACG
+Fibroblast	4170271	47.97	GTTGCAGC
+Keratinocyte	2928517	33.69	ATGCAGGG
+unassigned	149836	1.69	N/A

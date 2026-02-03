@@ -1,0 +1,19 @@
+DEMULTIPLEXING SUMMARY (HASH TABLE MODE)
+============================================================
+
+Total reads: 8,826,466
+Assigned reads: 8,676,613
+Unassigned reads: 149,853
+No barcode: 0
+No gRNA: 0
+Invalid gRNA: 0
+
+gRNA MATCHING STATISTICS:
+  Exact matches: 8,826,466 (100.0%)
+  1-mismatch matches: 0 (0.0%)
+  Total valid: 8,826,466
+
+CELL TYPE DISTRIBUTION:
+  Endothelial: 1,217,852 (13.8%)
+  Fibroblast: 3,961,252 (44.9%)
+  Keratinocyte: 3,497,509 (39.6%)
