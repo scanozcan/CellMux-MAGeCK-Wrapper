@@ -136,16 +136,21 @@ def extract_celltype_matrix(
     combined_matrix: pd.DataFrame,
     cell_type: str,
     sample_names: list,
-    output_file: Path
+    output_file: Path,
+    library_file: Path = None
 ) -> pd.DataFrame:
     """
     Extract counts for a specific cell type into MAGeCK format.
+
+    IMPORTANT: Filters to only include sgRNAs from this cell type's library,
+    removing sgRNAs from other cell types that have all-zero counts.
 
     Args:
         combined_matrix: Combined count matrix
         cell_type: Cell type to extract
         sample_names: List of sample names
         output_file: Path to save cell-type-specific matrix
+        library_file: Optional path to cell-type-specific library file for filtering
 
     Returns:
         Cell-type-specific count matrix
@@ -160,6 +165,30 @@ def extract_celltype_matrix(
             celltype_df[sample_name] = combined_matrix[col_name].values
         else:
             celltype_df[sample_name] = 0
+
+    # Set in_library based on whether sgRNA is in this cell type's library
+    if library_file is not None and library_file.exists():
+        # Load cell-type-specific library (no header, first column is sgRNA)
+        lib_df = pd.read_csv(library_file, sep='\t', header=None, names=['sgRNA', 'Gene'])
+        lib_sgrnas = set(lib_df['sgRNA'].values)
+
+        # Set in_library: 1 if in this library, 0 otherwise
+        celltype_df['in_library'] = celltype_df['sgRNA'].isin(lib_sgrnas).astype(int)
+
+        # Filter to only keep sgRNAs from this library
+        celltype_df = celltype_df[celltype_df['in_library'] == 1].copy()
+
+        n_in_library = (celltype_df['in_library'] == 1).sum()
+        n_filtered = len(combined_matrix) - len(celltype_df)
+        print(f"    Filtered to {n_in_library:,} sgRNAs from library (removed {n_filtered:,} from other cell types)")
+    else:
+        # Fallback: filter out rows where all counts are zero
+        count_cols = [col for col in celltype_df.columns if col not in ['sgRNA', 'Gene', 'in_library']]
+        row_sums = celltype_df[count_cols].sum(axis=1)
+        celltype_df = celltype_df[row_sums > 0].copy()
+
+        n_filtered = len(combined_matrix) - len(celltype_df)
+        print(f"    Filtered to {len(celltype_df):,} sgRNAs with non-zero counts (removed {n_filtered:,} all-zero rows)")
 
     # Save
     celltype_df.to_csv(output_file, sep='\t', index=False)
@@ -269,13 +298,15 @@ def main():
     print("\nExtracting cell-type-specific matrices...")
     for cell_type in config.cell_types:
         matrix_file = counts_dir / f"{cell_type.name}_count_matrix.txt"
+        library_file = data_dir / f"{cell_type.name.lower()}_library.txt"
 
         print(f"\n  [{cell_type.name}]")
         extract_celltype_matrix(
             combined_matrix=combined_matrix,
             cell_type=cell_type.name,
             sample_names=all_samples,
-            output_file=matrix_file
+            output_file=matrix_file,
+            library_file=library_file
         )
 
     print("\n✓ Count matrix creation complete!")
