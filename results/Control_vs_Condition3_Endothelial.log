@@ -1,0 +1,79 @@
+INFO  @ Tue, 03 Feb 2026 02:18:58: Parameters: /opt/miniconda3/envs/py37/bin/mageck test -k pipeline_outputs_10M_rra/counts/Endothelial_count_matrix.txt -t Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 -c Control_Rep1,Control_Rep2,Control_Rep3 -n pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial --norm-method median --adjust-method fdr --gene-test-fdr-threshold 0.25 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loading count table from pipeline_outputs_10M_rra/counts/Endothelial_count_matrix.txt  
+INFO  @ Tue, 03 Feb 2026 02:18:58: Processing 1 lines.. 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loaded 2900 records. 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Setting up the visualization module... 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Setting up the visualization module... 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Given sample labels: Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Converted index: 10 11 12 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Treatment samples:Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Treatment sample index:10,11,12 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Given sample labels: Control_Rep1,Control_Rep2,Control_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Converted index: 1 2 3 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Control samples:Control_Rep1,Control_Rep2,Control_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Control sample index:1,2,3 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Initial (total) size factor: 1.2186026820625706 1.3556743136848324 1.4700919741867706 0.874583578395605 1.6605559054016235 0.4960541681324017 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Median factor: 1.1127728651834925 1.245209601289193 1.3437077103327806 0.785295109754402 1.503180799062836 0.45019523635972786 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Final size factor: 1.1127728651834925 1.245209601289193 1.3437077103327806 0.785295109754402 1.503180799062836 0.45019523635972786 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Detecting outliers from variance estimation.. Avg read count:[244.30794256662392], Var: [1367.3885914554949] 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Skipping 2 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: Adjusted model: 1.1955376059930605	1.3298333575671457 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Before RRA, 0 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: lower test FDR cutoff: 0.3389655172413793 
+DEBUG @ Tue, 03 Feb 2026 02:18:58: higher test FDR cutoff: 0.4048275862068966 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.plow.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.low.txt -p 0.3389655172413793 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:58: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Summary: 2900 sgRNAs, 894 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Permuting genes with 12 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Number of genes under FDR adjustment: 894 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:58:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:58:    
+INFO  @ Tue, 03 Feb 2026 02:18:58: End command message. 
+INFO  @ Tue, 03 Feb 2026 02:18:58: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.phigh.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.high.txt -p 0.4048275862068966 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:59: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Summary: 2900 sgRNAs, 894 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Permuting genes with 12 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Number of genes under FDR adjustment: 894 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:59:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:59:    
+INFO  @ Tue, 03 Feb 2026 02:18:59: End command message. 
+DEBUG @ Tue, 03 Feb 2026 02:18:59: Sorting the merged items by negative selection... 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.low.txt: NRP2,ANGPT2,ANGPT1,TIE1,FLT4,EGLN1,GDF2,BMP4,NCOA2,EP300 
+DEBUG @ Tue, 03 Feb 2026 02:18:59: Column index:3 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.high.txt: NOXA,BIK,PUMA,BCLW,BID,BAD,MCL1,BCL2L1,BMF,BAK1 
+DEBUG @ Tue, 03 Feb 2026 02:18:59: Column index:9 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.plow.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.phigh.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.low.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:59: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Endothelial.gene.high.txt 

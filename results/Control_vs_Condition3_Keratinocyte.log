@@ -1,0 +1,79 @@
+INFO  @ Tue, 03 Feb 2026 02:18:46: Parameters: /opt/miniconda3/envs/py37/bin/mageck test -k pipeline_outputs_10M_rra/counts/Keratinocyte_count_matrix.txt -t Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 -c Control_Rep1,Control_Rep2,Control_Rep3 -n pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte --norm-method median --adjust-method fdr --gene-test-fdr-threshold 0.25 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading count table from pipeline_outputs_10M_rra/counts/Keratinocyte_count_matrix.txt  
+INFO  @ Tue, 03 Feb 2026 02:18:46: Processing 1 lines.. 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loaded 2900 records. 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Setting up the visualization module... 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Setting up the visualization module... 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Given sample labels: Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Converted index: 10 11 12 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Treatment samples:Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Treatment sample index:10,11,12 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Given sample labels: Control_Rep1,Control_Rep2,Control_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Converted index: 1 2 3 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Control samples:Control_Rep1,Control_Rep2,Control_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Control sample index:1,2,3 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Initial (total) size factor: 0.8590965931973568 0.8395983446626316 0.9557716404412016 1.167345807093357 1.0199271965196213 1.313095068577693 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Median factor: 0.8987794526278627 0.8773569687846727 0.9996337572989986 1.0922779768212258 0.953660335650625 1.2296707533806086 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Final size factor: 0.8987794526278627 0.8773569687846727 0.9996337572989986 1.0922779768212258 0.953660335650625 1.2296707533806086 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Detecting outliers from variance estimation.. Avg read count:[1361.654443142512], Var: [78726.32399588091] 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Skipping 6 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Adjusted model: 1.4251366942989836	0 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Before RRA, 0 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: lower test FDR cutoff: 0.22448275862068964 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: higher test FDR cutoff: 0.0803448275862069 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.plow.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.low.txt -p 0.22448275862068964 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:46: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Summary: 2900 sgRNAs, 899 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 12 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Number of genes under FDR adjustment: 899 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:    
+INFO  @ Tue, 03 Feb 2026 02:18:46: End command message. 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.phigh.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.high.txt -p 0.0803448275862069 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:46: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Summary: 2900 sgRNAs, 899 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Permuting genes with 12 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Number of genes under FDR adjustment: 899 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:46:    
+INFO  @ Tue, 03 Feb 2026 02:18:46: End command message. 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Sorting the merged items by negative selection... 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.low.txt: FZD1,ADAM10,FZD7,PSEN1,HEY1,APC,NOTCH3,RBPJ,TGFBR1,TCF7 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Column index:3 
+INFO  @ Tue, 03 Feb 2026 02:18:46: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.high.txt: NOXA,BCLXL,MCL1,BAD,BCL2L1,HRK,BIK,BCL2L2,BIM,BAX 
+DEBUG @ Tue, 03 Feb 2026 02:18:46: Column index:9 
+INFO  @ Tue, 03 Feb 2026 02:18:47: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.plow.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:47: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.phigh.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:47: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.low.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:47: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Keratinocyte.gene.high.txt 

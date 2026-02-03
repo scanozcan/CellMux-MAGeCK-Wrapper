@@ -1,0 +1,77 @@
+INFO  @ Tue, 03 Feb 2026 02:18:52: Parameters: /opt/miniconda3/envs/py37/bin/mageck test -k pipeline_outputs_10M_rra/counts/Fibroblast_count_matrix.txt -t Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 -c Control_Rep1,Control_Rep2,Control_Rep3 -n pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast --norm-method median --adjust-method fdr --gene-test-fdr-threshold 0.25 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading count table from pipeline_outputs_10M_rra/counts/Fibroblast_count_matrix.txt  
+INFO  @ Tue, 03 Feb 2026 02:18:52: Processing 1 lines.. 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loaded 2900 records. 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Setting up the visualization module... 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading R template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading Rnw template file: /opt/miniconda3/envs/py37/lib/python3.10/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Setting up the visualization module... 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Given sample labels: Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Converted index: 10 11 12 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Treatment samples:Condition3_Rep1,Condition3_Rep2,Condition3_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Treatment sample index:10,11,12 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Given sample labels: Control_Rep1,Control_Rep2,Control_Rep3 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Converted index: 1 2 3 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Control samples:Control_Rep1,Control_Rep2,Control_Rep3 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Control sample index:1,2,3 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Initial (total) size factor: 0.9815508258470362 0.9896001038007413 0.8769105721822519 1.0301782882085482 1.041859806576843 1.1113581661405574 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Median factor: 0.9876024153776272 0.9880014103072369 0.8812551780955239 1.011835628755062 1.0373603571667878 1.0924391758639196 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Final size factor: 0.9876024153776272 0.9880014103072369 0.8812551780955239 1.011835628755062 1.0373603571667878 1.0924391758639196 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Detecting outliers from variance estimation.. Avg read count:[1576.5655136128923], Var: [100945.70761505434] 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Skipping 3 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Adjusted model: 1.7296989039145458	0 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Before RRA, 0 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: lower test FDR cutoff: 0.26448275862068965 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: higher test FDR cutoff: 0.2751724137931034 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.plow.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.low.txt -p 0.26448275862068965 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:52: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Summary: 2900 sgRNAs, 900 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Number of genes under FDR adjustment: 900 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:    
+INFO  @ Tue, 03 Feb 2026 02:18:52: End command message. 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: RRA -i pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.phigh.txt -o pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.high.txt -p 0.2751724137931034 --skip-gene NA --skip-gene na  
+INFO  @ Tue, 03 Feb 2026 02:18:52: Command message: 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Welcome to RRA v 0.5.9. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Skipping gene NA for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Skipping gene na for permutation ... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Reading input file... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Summary: 2900 sgRNAs, 900 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Computing lo-values for each group... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Computing false discovery rate... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Increase the number of permutations to 112 to get precise p values. To avoid this, use the --permutation option. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Permuting genes with 1 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Permuting genes with 6 sgRNAs... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Number of genes under FDR adjustment: 900 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Saving to output file... 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   RRA completed. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Groups deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:   Lists deletion complete. 
+INFO  @ Tue, 03 Feb 2026 02:18:52:    
+INFO  @ Tue, 03 Feb 2026 02:18:52: End command message. 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Sorting the merged items by negative selection... 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.low.txt: HGF,HBEGF,TIE1,IGFBP5,PDGFB,ANGPT1,EGFR,TEK,COL5A1,IGF2 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Column index:3 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Loading top 10 genes from pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.high.txt: FADD,SURVIVIN,DIABLO,BIRC5,XIAP,FLIP,CFLAR,TRAF2,SCN7A,SMAD2 
+DEBUG @ Tue, 03 Feb 2026 02:18:52: Column index:9 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.plow.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.phigh.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.low.txt 
+INFO  @ Tue, 03 Feb 2026 02:18:52: Running command: rm pipeline_outputs_10M_rra/results/Control_vs_Condition3_Fibroblast.gene.high.txt 

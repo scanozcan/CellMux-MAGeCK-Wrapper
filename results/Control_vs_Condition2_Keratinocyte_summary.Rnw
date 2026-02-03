@@ -1,0 +1,1063 @@
+% This is a template file for Sweave used in MAGeCK
+% Author: Wei Li, Shirley Liu lab
+% Do not modify lines beginning with "#__".
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amscd}
+\usepackage[tableposition=top]{caption}
+\usepackage{ifthen}
+\usepackage{fullpage}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+\setkeys{Gin}{width=0.9\textwidth}
+
+\title{MAGeCK Comparison Report}
+\author{Wei Li}
+
+\maketitle
+
+
+\tableofcontents
+
+\section{Summary}
+
+%Function definition
+<<label=funcdef,include=FALSE,echo=FALSE>>=
+genreporttable<-function(comparisons,ngenes,direction,fdr1,fdr5,fdr25){
+  xtb=data.frame(Comparison=comparisons,Genes=ngenes,Selection=direction,FDR1=fdr1,FDR5=fdr5,FDR25=fdr25);
+  colnames(xtb)=c("Comparison","Genes","Selection","FDR1%","FDR5%","FDR25%");
+  return (xtb);
+}
+@
+
+The statistics of comparisons is as indicated in the following table. 
+
+<<label=tab1,echo=FALSE,results=tex>>=
+library(xtable)
+comparisons=c("Condition2_Rep1,Condition2_Rep2,Condition2_Rep3_vs_Control_Rep1,Control_Rep2,Control_Rep3 neg.","Condition2_Rep1,Condition2_Rep2,Condition2_Rep3_vs_Control_Rep1,Control_Rep2,Control_Rep3 pos.");
+ngenes=c(899,899);
+direction=c("negative","positive");
+fdr1=c(106,14);
+fdr5=c(106,14);
+fdr25=c(106,14);
+
+cptable=genreporttable(comparisons,ngenes,direction,fdr1,fdr5,fdr25);
+print(xtable(cptable, caption = "Summary of comparisons", label = "tab:one",
+    digits = c(0, 0, 0, 0, 0, 0, 0),
+    table.placement = "tbp",
+    caption.placement = "top"))
+@
+
+The meanings of the columns are as follows.
+
+\begin{itemize}
+\item \textbf{Comparison}: The label for comparisons;
+\item \textbf{Genes}: The number of genes in the library;
+\item \textbf{Selection}: The direction of selection, either positive selection or negative selection;
+\item \textbf{FDR1\%}: The number of genes with FDR $<$ 1\%;
+\item \textbf{FDR5\%}: The number of genes with FDR $<$ 5\%;
+\item \textbf{FDR25\%}: The number of genes with FDR $<$ 25\%;
+\end{itemize}
+
+The following figures show:
+
+\begin{itemize}
+\item Individual sgRNA read counts of selected genes in selected samples; 
+\item The distribution of RRA scores and p values of all genes; and
+\item The RRA scores and p values of selected genes.
+\end{itemize}
+
+
+\newpage\section{Comparison results of Condition2 Rep1,Condition2 Rep2,Condition2 Rep3 vs Control Rep1,Control Rep2,Control Rep3 neg.}
+
+The following figure shows the distribution of RRA score in the comparison Condition2 Rep1,Condition2 Rep2,Condition2 Rep3 vs Control Rep1,Control Rep2,Control Rep3 neg., and the RRA scores of 10 genes.
+
+<<echo=FALSE>>=
+gstable=read.table('Control_vs_Condition2_Keratinocyte.gene_summary.txt',header=T)
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=# 
+#
+# parameters
+# Do not modify the variables beginning with "__"
+
+# gstablename='__GENE_SUMMARY_FILE__'
+startindex=3
+# outputfile='__OUTPUT_FILE__'
+targetgenelist=c("SRC","STAT5A","JAK2","YES1","PAK1","TYK2","CFL1","LYN","EGFR","JAK1")
+# samplelabel=sub('.\w+.\w+$','',colnames(gstable)[startindex]);
+samplelabel='Condition2_Rep1,Condition2_Rep2,Condition2_Rep3_vs_Control_Rep1,Control_Rep2,Control_Rep3 neg.'
+
+
+# You need to write some codes in front of this code:
+# gstable=read.table(gstablename,header=T)
+# pdf(file=outputfile,width=6,height=6)
+
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+######
+# function definition
+
+plotrankedvalues<-function(val, tglist, ...){
+  
+  plot(val,log='y',ylim=c(max(val),min(val)),type='l',lwd=2, ...)
+  if(length(tglist)>0){
+    for(i in 1:length(tglist)){
+      targetgene=tglist[i];
+      tx=which(names(val)==targetgene);ty=val[targetgene];
+      points(tx,ty,col=colors[(i %% length(colors)) ],cex=2,pch=20)
+      # text(tx+50,ty,targetgene,col=colors[i])
+    }
+    legend('topright',tglist,pch=20,pt.cex = 2,cex=1,col=colors)
+  }
+}
+
+
+
+plotrandvalues<-function(val,targetgenelist, ...){
+  # choose the one with the best distance distribution
+  
+  mindiffvalue=0;
+  randval=val;
+  for(i in 1:20){
+    randval0=sample(val)
+    vindex=sort(which(names(randval0) %in% targetgenelist))
+    if(max(vindex)>0.9*length(val)){
+      # print('pass...')
+      next;
+    }
+    mindiffind=min(diff(vindex));
+    if (mindiffind > mindiffvalue){
+      mindiffvalue=mindiffind;
+      randval=randval0;
+      # print(paste('Diff: ',mindiffvalue))
+    }
+  }
+  plot(randval,log='y',ylim=c(max(randval),min(randval)),pch=20,col='grey', ...)
+  
+  if(length(targetgenelist)>0){
+    for(i in 1:length(targetgenelist)){
+      targetgene=targetgenelist[i];
+      tx=which(names(randval)==targetgene);ty=randval[targetgene];
+      points(tx,ty,col=colors[(i %% length(colors)) ],cex=2,pch=20)
+      text(tx+50,ty,targetgene,col=colors[i])
+    }
+  }
+  
+}
+
+
+
+
+# set.seed(1235)
+
+
+
+pvec=gstable[,startindex]
+names(pvec)=gstable[,'id']
+pvec=sort(pvec);
+
+plotrankedvalues(pvec,targetgenelist,xlab='Genes',ylab='RRA score',main=paste('Distribution of RRA scores in \n',samplelabel))
+
+# plotrandvalues(pvec,targetgenelist,xlab='Genes',ylab='RRA score',main=paste('Distribution of RRA scores in \n',samplelabel))
+
+
+pvec=gstable[,startindex+1]
+names(pvec)=gstable[,'id']
+pvec=sort(pvec);
+
+plotrankedvalues(pvec,targetgenelist,xlab='Genes',ylab='p value',main=paste('Distribution of p values in \n',samplelabel))
+
+# plotrandvalues(pvec,targetgenelist,xlab='Genes',ylab='p value',main=paste('Distribution of p values in \n',samplelabel))
+
+
+
+# you need to write after this code:
+# dev.off()
+
+
+
+
+@
+%%
+\clearpage
+\newpage
+The following figures show the distribution of sgRNA read counts (normalized) of selected genes in selected samples.
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1476.8566187272866,1475.6234470372385,1473.1152343327335,438.6089320720614,369.09065232346836,438.1738468790404),c(1302.6308684740063,1301.9688358865,1301.4024156068322,339.56820547514434,289.9997982541537,341.02675842548877),c(1434.428586282187,1433.3116636096474,1431.9443245797397,366.7771962984732,424.11037689342635,368.34937705305015),c(1284.5763865824747,1283.457430636929,1282.3232135261765,359.1586788679411,498.6162539152445,360.25378634858754),c(1466.0239295923675,1463.282510204191,1470.1027287410511,470.1713614271229,345.01952282411173,471.56815853494885),c(1236.732009569916,1234.9751787928144,1238.1397981815,266.64811006862294,331.2645916816222,266.14254440920934))
+targetgene="SRC"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1795.5182241128196,1793.8433182322462,1826.5825570901447,567.0353687581737,630.4343440307689,567.7032981504427),c(1055.2844665600232,1056.031594713627,1051.364451497186,398.33962565353465,424.11037689342635,399.71979103284286),c(1636.6387834673412,1635.1741303787799,1639.8072104058308,464.72956326245713,457.351460487776,466.5084143446597),c(1475.0511705381334,1473.8604560610888,1416.881796621327,415.75337978046514,429.841598202797,415.9109724417682),c(1923.705045542694,1923.423154979244,1955.1161290019306,558.3284916947084,629.2880997688948,557.5838097698644),c(1623.0979220486927,1621.9516980576577,1623.7405139168577,470.1713614271229,472.2526358921396,471.56815853494885))
+targetgene="STAT5A"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(2097.0280717013975,2096.1962706419076,2094.6955547498856,664.9877357221576,802.3709833118877,664.8503866039944),c(1437.136758565917,1435.0746545857971,1436.9651672325438,481.0549577564544,447.03526213090885,481.6876469155271),c(1383.8760369858987,1383.9479162774578,1382.740066582259,401.6047045523341,277.3911113735383,403.7675863850742),c(1203.3312180705825,1150.3516119376322,1206.0064052035534,345.01000363981007,385.1380719897061,345.07455377772004),c(1552.6854426717193,1551.4320590116724,1553.4487167775997,303.6523375883502,314.0709277535103,303.58465141734905),c(1258.397387839754,1257.8940614827595,1259.2273373232774,337.391486209278,353.0432326572306,337.99091191131527))
+targetgene="JAK2"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1272.8409733529793,1271.1164938038817,1273.2856967511289,419.0184586792646,422.9641326315522,419.95876779399947),c(1724.2030206412696,1722.4421836981865,1724.1573669729403,413.57666051459887,585.730817817678,413.8870747656525),c(1418.1795525798086,1416.563249336226,1416.881796621327,482.1433173893876,367.94440806159423,482.69959575358496),c(1188.8876325573572,1188.2559179248492,1185.923034592337,296.0338201578181,244.1500277791887,296.5010095509442),c(1398.3196224991239,1398.051844086655,1394.790088948989,292.76874125901867,350.7507441334823,294.47711187482855),c(1201.5257698814294,1201.4783502459713,1198.9772254896277,342.8332843739438,419.5253998459299,343.0506561016044))
+targetgene="YES1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1020.0782268715365,1020.7717751906346,1018.2268899886787,327.59624951287964,309.48595070601385,327.87142353073693),c(1357.6970382431778,1357.5030516352135,1356.6316847876776,392.8978274888689,543.3197801283354,393.6480980044959),c(1957.1058370420276,1955.1569925499373,1960.1369716547347,694.3734458113528,441.30404082153825,695.2088517457292),c(1619.4870256703862,1617.5442206172836,1619.7238397946144,469.0830017941897,542.1735358664613,469.5442608588332),c(1063.4089834112124,1063.0835586182257,1063.414473863916,250.32271557462562,299.16975234914673,249.95136300028403),c(1238.5374577590692,1238.5011607451136,1236.1314611203784,289.5036623602192,396.6005146084474,288.40541884648155))
+targetgene="PAK1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1143.751427828528,1148.5886209614825,1143.7479563087822,263.3830311698235,345.01952282411173,264.11864673309367),c(1355.8915900540246,1396.2888531105052,1354.623347726556,402.6930641852673,333.5570802053705,403.7675863850742),c(1599.6270955897014,1603.4402928080865,1599.6404691833977,395.0745467547352,435.5728195121676,396.6839445186694),c(1234.9265613807627,1290.5093945415276,1235.1272925898174,349.3634421715427,283.12233268290896,349.1223491299514),c(1455.1912404574484,1454.4675553234429,1455.0402007826387,536.5612990360454,411.50169001281097,537.3448330087077),c(1556.2963390500256,1554.9580409639718,1558.469559430404,411.39994124873255,439.01155229779,413.8870747656525))
+targetgene="TYK2"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1299.9226961902766,1299.3243494222756,1296.381572954028,447.31580913552665,373.6756293709648,449.3052840976766),c(1364.016106905214,1362.7920245636624,1364.6650330321643,488.67347518698654,364.50567527597184,489.7832376199898),c(1396.5141743099707,1396.2888531105052,1395.7942574795497,408.1348623499331,450.47399491653124,409.8392794134212),c(1364.016106905214,1361.9105290755874,1365.669201562725,407.0465027169999,417.2329113221816,408.82733057536336),c(2267.6429255763715,2265.443404352272,2267.412542006348,626.8951485694972,777.1536095506569,627.4082795958547),c(1375.7515201347094,1375.1329613967098,1374.7067183377724,388.5443889571363,354.1894769191047,389.6003026522646))
+targetgene="CFL1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(955.0820920620226,953.7781180969487,954.9642725633466,228.5555229159625,237.27256220794393,228.7004374010696),c(1105.8370158563116,1104.5138465577418,1104.58538361691,331.94968804461223,256.75871465980407,333.94311655908393),c(855.7824416585988,855.9321189206444,853.5432509767031,226.37880365009622,319.80214906288097,226.67653972495395),c(1281.868214298745,1279.93144868463,1282.3232135261765,287.3269430943529,404.62422444156624,286.38152117036594),c(1290.895455244511,1289.6278990534527,1291.3607303012238,391.80946785593574,379.4068506803355,392.6361491664381),c(1706.148538749738,1704.8122739366902,1705.0781648922846,612.7464733413661,380.5530949422096,614.2529447011028))
+targetgene="LYN"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1413.6659321069258,1412.155771895852,1416.881796621327,464.72956326245713,465.3751703208949,365.31353053887665),c(1150.9732205851408,1150.3516119376322,1147.7646304310256,311.2708550188823,310.632194967888,284.3576234942503),c(1809.0590855314683,1807.9472460414433,1809.5116920706107,543.0914568336443,543.3197801283354,576.8108376929631),c(1165.4168060983661,1164.4555397468291,1169.8563381033637,271.00154860035553,270.5136458022936,320.78778166433216),c(1639.3469557510712,1638.700112331079,1640.8113789363917,646.485621962294,646.4817636970067,501.92662367668373),c(1891.206978137937,1889.926326432401,1889.8451745154769,448.4041687684598,449.3277506546571,611.2170981869293))
+targetgene="EGFR"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1401.0277947828538,1399.8148350628046,1399.810931601793,472.3480806929892,526.1261162002235,473.59205621106446),c(1730.5220893033058,1728.61265211471,1731.1865466868662,464.72956326245713,490.59254408212564,464.484516668544),c(1348.669797297412,1346.0436102902408,1353.619179195995,474.5247999588555,345.01952282411173,473.59205621106446),c(1440.7476549442233,1440.363627514246,1439.9776728242261,297.12217979075126,477.98385720151026,298.5249072270599),c(1538.241857158494,1537.3281312024756,1535.373683227505,454.9343265660587,559.3671997945731,454.3650282879657),c(1056.1871906545998,1055.1500992255524,1058.3936312111118,328.6846091458128,335.84956872911874,329.8953212068526))
+targetgene="JAK1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+
+\newpage\section{Comparison results of Condition2 Rep1,Condition2 Rep2,Condition2 Rep3 vs Control Rep1,Control Rep2,Control Rep3 pos.}
+
+The following figure shows the distribution of RRA score in the comparison Condition2 Rep1,Condition2 Rep2,Condition2 Rep3 vs Control Rep1,Control Rep2,Control Rep3 pos., and the RRA scores of 10 genes.
+
+<<echo=FALSE>>=
+gstable=read.table('Control_vs_Condition2_Keratinocyte.gene_summary.txt',header=T)
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=# 
+#
+# parameters
+# Do not modify the variables beginning with "__"
+
+# gstablename='__GENE_SUMMARY_FILE__'
+startindex=9
+# outputfile='__OUTPUT_FILE__'
+targetgenelist=c("MLH1","ATM","CHEK1","PARP1","ERCC1","CHEK2","ATR","XRCC1","BRCA2","BRCA1")
+# samplelabel=sub('.\w+.\w+$','',colnames(gstable)[startindex]);
+samplelabel='Condition2_Rep1,Condition2_Rep2,Condition2_Rep3_vs_Control_Rep1,Control_Rep2,Control_Rep3 pos.'
+
+
+# You need to write some codes in front of this code:
+# gstable=read.table(gstablename,header=T)
+# pdf(file=outputfile,width=6,height=6)
+
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+######
+# function definition
+
+plotrankedvalues<-function(val, tglist, ...){
+  
+  plot(val,log='y',ylim=c(max(val),min(val)),type='l',lwd=2, ...)
+  if(length(tglist)>0){
+    for(i in 1:length(tglist)){
+      targetgene=tglist[i];
+      tx=which(names(val)==targetgene);ty=val[targetgene];
+      points(tx,ty,col=colors[(i %% length(colors)) ],cex=2,pch=20)
+      # text(tx+50,ty,targetgene,col=colors[i])
+    }
+    legend('topright',tglist,pch=20,pt.cex = 2,cex=1,col=colors)
+  }
+}
+
+
+
+plotrandvalues<-function(val,targetgenelist, ...){
+  # choose the one with the best distance distribution
+  
+  mindiffvalue=0;
+  randval=val;
+  for(i in 1:20){
+    randval0=sample(val)
+    vindex=sort(which(names(randval0) %in% targetgenelist))
+    if(max(vindex)>0.9*length(val)){
+      # print('pass...')
+      next;
+    }
+    mindiffind=min(diff(vindex));
+    if (mindiffind > mindiffvalue){
+      mindiffvalue=mindiffind;
+      randval=randval0;
+      # print(paste('Diff: ',mindiffvalue))
+    }
+  }
+  plot(randval,log='y',ylim=c(max(randval),min(randval)),pch=20,col='grey', ...)
+  
+  if(length(targetgenelist)>0){
+    for(i in 1:length(targetgenelist)){
+      targetgene=targetgenelist[i];
+      tx=which(names(randval)==targetgene);ty=randval[targetgene];
+      points(tx,ty,col=colors[(i %% length(colors)) ],cex=2,pch=20)
+      text(tx+50,ty,targetgene,col=colors[i])
+    }
+  }
+  
+}
+
+
+
+
+# set.seed(1235)
+
+
+
+pvec=gstable[,startindex]
+names(pvec)=gstable[,'id']
+pvec=sort(pvec);
+
+plotrankedvalues(pvec,targetgenelist,xlab='Genes',ylab='RRA score',main=paste('Distribution of RRA scores in \n',samplelabel))
+
+# plotrandvalues(pvec,targetgenelist,xlab='Genes',ylab='RRA score',main=paste('Distribution of RRA scores in \n',samplelabel))
+
+
+pvec=gstable[,startindex+1]
+names(pvec)=gstable[,'id']
+pvec=sort(pvec);
+
+plotrankedvalues(pvec,targetgenelist,xlab='Genes',ylab='p value',main=paste('Distribution of p values in \n',samplelabel))
+
+# plotrandvalues(pvec,targetgenelist,xlab='Genes',ylab='p value',main=paste('Distribution of p values in \n',samplelabel))
+
+
+
+# you need to write after this code:
+# dev.off()
+
+
+
+
+@
+%%
+\clearpage
+\newpage
+The following figures show the distribution of sgRNA read counts (normalized) of selected genes in selected samples.
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1464.2184814032144,1464.1640056922658,1469.0985602104902,2443.3673759349326,2442.646522053761,2462.0715229947004),c(1485.8838596730523,1486.2013928941362,1516.2944811468492,2487.990120885192,2488.496292528726,2471.179062537221),c(1664.6232303992153,1662.500490509099,1569.515413266573,2637.095390597034,2637.508046572362,2483.322448593915),c(1180.763115706168,1181.2039540202506,1222.0731016925267,1881.7738053414248,1882.1330779973139,1873.1172992450436),c(1943.5649756233788,1941.9345602288151,1961.1411401852956,3066.99744560563,3067.3496447751595,3009.535844383987),c(1796.4209482073961,1795.606309208396,1739.2198949313527,2732.8710382951517,2732.6463203079147,2778.8115093068013))
+targetgene="MLH1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(967.7202293860948,967.0005504180709,1006.1768676219489,1546.559038398013,1545.1372650063208,1595.843317617198),c(1104.0315676671585,1103.632351069667,1113.6229003919575,1800.1468328714382,1800.749735404251,1774.958261953434),c(1231.3156650024564,1229.6862058643653,1201.98973108131,1923.1314713928846,1923.3978714247824,1824.5437550182676),c(1349.5725213919886,1349.56959224254,1327.5107974014136,2053.7346273448634,2054.0697172784326,2046.1605505529324),c(1966.1330779877933,1963.9719474306855,1980.2203422659513,3279.2275740275954,3281.6973217456207,2700.8914487763486),c(1575.2535450361338,1574.3509417016178,1577.5487615110596,2363.9171227308125,2363.5556679844462,2395.282899682884))
+targetgene="ATM"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1654.6932653588728,1654.5670311164258,1720.140692850697,2444.4557355678658,2444.939010577509,2630.0550301123003),c(1461.5103091194846,1460.6380237399667,1448.0110210687128,2361.740403464946,2361.263179460698,2260.6937042211925),c(1514.771030699503,1513.5277530244555,1460.0610434354428,2257.257878703363,2256.9549516301527,2185.809490204913),c(1466.0239295923675,1465.0455011803408,1457.0485378437602,2182.1610640309755,2181.3028303464603,2289.028271686812),c(1294.5063516228172,1294.0353764938268,1409.8526169074014,1964.4891374443446,1964.6626648522508,2028.9574203059494),c(1392.9032779316644,1392.762871158206,1414.8734595602054,2049.3811888131304,2048.338495969062,2084.61460639913))
+targetgene="CHEK1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1270.1328010692494,1270.234998315807,1226.08977581477,1920.9547521270183,1919.9591386391598,2087.6504529133035),c(900.9186463874278,900.006893324385,934.8809019521301,1377.863295293374,1377.7856027726987,1386.3699081392272),c(1380.2651406075922,1380.4219343251586,1476.1277399244161,2360.652043832013,2363.5556679844462,2085.626555237188),c(1134.7241868827623,1134.4846931522854,1190.943877245141,1828.4441833277,1829.405841951104,1779.0060573056653),c(1271.035525163826,1271.1164938038817,1255.210663201034,1894.8341209366226,1893.595520616055,1974.3121830508264),c(1123.8914977478432,1123.025251807313,1090.5270241890585,1691.3108695781227,1688.4177977405866,1760.7909782206243))
+targetgene="PARP1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1452.4830681737187,1450.9415733711437,1450.0193581298345,2290.997027324291,2292.488523748251,2312.3030949621416),c(1387.486933364205,1386.5924027416822,1367.6775386238467,2076.5901796364597,2074.7021139921667,2050.2083459051637),c(1259.3001119343305,1257.8940614827595,1162.827158389438,1952.5171814820799,1956.6389550191318,1882.224838787564),c(2041.9619019322263,2039.7805594051194,2133.858127441758,3182.3635666965447,3183.120315224446,3196.746379424685),c(1945.370423812532,1942.8160557168899,1948.086949288005,2880.8879483740607,2881.658074351551,2969.0578908616735),c(1521.090099361539,1519.6982214409793,1530.3528405747006,2211.5467741201705,2211.105181155188,2312.3030949621416))
+targetgene="ERCC1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1786.4909831670539,1785.0283633514982,1825.5783885595838,2861.2974749812643,2862.171921899691,2754.5247371934133),c(1395.6114502153941,1396.2888531105052,1403.8276057240364,2348.680087869748,2349.8007368419567,2134.200099463964),c(1851.4871179765676,1849.3775339809597,1810.5158606011714,2615.328197938371,2613.4369170730056,2747.4410953270085),c(1331.518039500457,1331.058186992969,1311.4441009124403,2004.7584438628712,2003.634969755971,2163.5466157676406),c(1528.3118921181515,1527.6316808336526,1476.1277399244161,2304.0573429194887,2300.5122335813694,2557.1947137721368),c(1587.891682360206,1585.8103830465902,1642.8197159975134,2420.5118236433364,2419.7216368162785,2490.40609046032))
+targetgene="CHEK2"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1281.868214298745,1280.8129441727046,1361.6525274404817,1969.9309356090102,1968.101397637873,1884.2487364636797),c(1415.471380296079,1412.155771895852,1306.4232582596362,2031.9674346862,2029.998587779076,2082.5907087230144),c(1466.926653686944,1465.0455011803408,1472.1110658021728,2123.3896438525853,2121.698128729006,2379.0917182739586),c(1845.1680493145316,1844.0885610525108,1835.6200738651921,2752.4615116879486,2750.986228497901,2709.998988318869),c(1472.3429982544035,1471.2159695968644,1497.2152790661935,2132.0965209160504,2132.014327085873,2184.797541366855),c(1134.7241868827623,1132.721702176136,1059.3977997416728,1721.784939300251,1720.512637073062,1627.2137315969908))
+targetgene="ATR"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1809.0590855314683,1808.828741529518,1801.478343826124,2905.9202199315237,2901.144226803411,2732.2618627561415),c(1048.0626738034105,1048.0981353209538,1174.877180756168,1612.9489760069355,1612.7656764568944,1710.1935363177329),c(1411.8604839177726,1410.3927809197023,1345.5858309515086,2064.6182236741947,2064.3859156352996,2087.6504529133035),c(1360.4052105269075,1358.3845471232883,1284.3315505872981,1941.6335851527483,1940.5915353528942,2177.71389950045),c(1336.0316599733399,1335.4656644333431,1337.552482707022,2030.879075053267,2028.852343517202,2148.367383196773),c(1595.1134751168186,1593.7438424392635,1579.5570985721813,2544.584821797716,2545.808505622432,2444.8683927477173))
+targetgene="XRCC1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+%
+
+
+<<fig=TRUE,echo=FALSE,width=4.5,height=4.5>>=
+par(mfrow=c(2,2));
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1592.4053028330889,1591.099355975039,1604.661311836202,2331.2663337428176,2331.460828651971,2277.8968344681757),c(1569.8372004686744,1568.180473285094,1571.5237503276946,2368.270561262545,2365.8481565081947,2354.8049461605706),c(981.2610908047435,981.1044782272679,1002.1601934997055,1439.8997943705638,1437.3903043901532,1477.445303564432),c(1104.934291761735,1104.5138465577418,1100.5687094946666,1649.9532035266627,1648.2992485749921,1679.8350711759979),c(1424.4986212418448,1424.4967087288992,1496.2111105356325,2127.743082384318,2125.1368615146284,2348.7332531322236),c(1443.455827227953,1441.2451230023207,1285.3357191178588,2131.0081612831173,2130.868082823999,2005.6825970306193))
+targetgene="BRCA2"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+# parameters
+# Do not modify the variables beginning with "__"
+targetmat=list(c(1252.0783191777177,1250.842097578161,1259.2273373232774,1928.5732695575505,1930.2753369960271,1818.4720619899206),c(863.0042344152114,862.1025873371681,812.3723412237092,1345.2125063053793,1344.544519178349,1241.6612242969575),c(1259.3001119343305,1257.8940614827595,1240.1481352426217,1860.0066126827617,1858.0619484979572,1927.7625365001663),c(1600.529819684278,1599.9143108557873,1610.6863230195668,2417.246744744537,2418.5753925544045,2414.5099276059827),c(896.4050259145449,896.4809113720858,947.9350928494209,1387.6585319897724,1386.9555568676917,1476.433354726374),c(1213.2611831109248,1212.056296102869,1214.03975344804,1743.552131958914,1744.5837665724187,1784.0658014959545))
+targetgene="BRCA1"
+collabel=c("Control_Rep1","Control_Rep2","Control_Rep3","Condition2_Rep1","Condition2_Rep2","Condition2_Rep3")
+
+# set up color using RColorBrewer
+#library(RColorBrewer)
+#colors <- brewer.pal(length(targetgenelist), "Set1")
+
+colors=c( "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",  "#A65628", "#F781BF",
+          "#999999", "#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3", 
+          "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+          "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+
+## code
+
+targetmatvec=unlist(targetmat)+1
+yrange=range(targetmatvec[targetmatvec>0]);
+# yrange[1]=1; # set the minimum value to 1
+for(i in 1:length(targetmat)){
+  vali=targetmat[[i]]+1;
+  if(i==1){
+    plot(1:length(vali),vali,type='b',las=1,pch=20,main=paste('sgRNAs in',targetgene),ylab='Read counts',xlab='Samples',xlim=c(0.7,length(vali)+0.3),ylim = yrange,col=colors[(i %% length(colors))],xaxt='n',log='y')
+    axis(1,at=1:length(vali),labels=(collabel),las=2)
+    # lines(0:100,rep(1,101),col='black');
+  }else{
+    lines(1:length(vali),vali,type='b',pch=20,col=colors[(i %% length(colors))])
+  }
+}
+
+
+
+par(mfrow=c(1,1));
+@
+%__INDIVIDUAL_PAGE__
+
+
+
+
+
+
+
+
+
+\end{document}
+
