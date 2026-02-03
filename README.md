@@ -1,4 +1,4 @@
-# cts-MageCK: Cell-Type-Specific CRISPR Screen Analysis
+# cts-MageCK: Cell-Type-Multiplexed CRISPR Screen Analysis
 
 **Version:** 1.0.0
 **Status:** Production Ready ✅
