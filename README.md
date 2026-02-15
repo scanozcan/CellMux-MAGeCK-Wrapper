@@ -565,4 +565,4 @@ MIT License - see LICENSE file for details.
 *Ultra-fast demultiplexing + Gold-standard MAGeCK statistics*
 
 **Last Updated:** 2026-02-03
-**Maintained by:** [Your Lab/Organization]
+**Maintained by:** [Can Ozcan / SRSP Lab / Columbia University]
