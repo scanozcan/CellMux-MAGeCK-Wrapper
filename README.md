@@ -1,4 +1,4 @@
-# ctm-MageCK: Cell-Type-Multiplexed CRISPR Screen Analysis
+# ctm-MageCK: cell-type-multiplexed CRISPR screen analysis
 
 **Version:** 1.0.0
 
