@@ -1,23 +1,13 @@
 # ctm-MageCK: Cell-Type-Multiplexed CRISPR Screen Analysis
 
 **Version:** 1.0.0
-**Status:** Production Ready ✅
-**License:** MIT
 
 ---
 
 ## 🎯 Overview
 
-**ctm-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the industry-standard MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
+**ctm-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the  MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
 
-### Key Capabilities
-
-- ✅ **Ultra-Fast Demultiplexing** - O(1) hash table algorithm processing 180-190K reads/sec
-- ✅ **Dual Statistical Methods** - Both RRA (pairwise) and MLE (multi-condition) analyses
-- ✅ **Multi-Condition Support** - Analyze multiple treatments/timepoints in a single experiment
-- ✅ **Comprehensive Visualizations** - 62 publication-ready figures (volcano plots, heatmaps, QC metrics)
-- ✅ **High Throughput** - Optimized for 10M+ reads/sample with <2% unassigned rate
-- ✅ **Production-Grade Performance** - Complete workflow in 5-10 minutes
 
 ### Workflow
 
@@ -303,17 +293,17 @@ results_mle/
 ### Visualizations
 
 **RRA (41 plots):**
-- 12 volcano plots (depleted & enriched)
-- 9 QC plots (count distributions, replicate correlations)
-- 12 cross-condition comparisons
-- 5 heatmaps (top hits, cell-type specificity)
-- 3 cell-type distribution plots
+- volcano plots
+- QC plots (count distributions, replicate correlations)
+- cross-condition comparisons
+- heatmaps (top hits, cell-type specificity)
+- cell-type distribution plots
 
 **MLE (21 plots):**
-- 12 volcano plots (with dual FDR/p-value thresholds)
-- 3 beta score heatmaps
-- 3 dotplots (logFC vs FDR)
-- 3 cross-cell-type comparison heatmaps
+- volcano plots (with dual FDR/p-value thresholds)
+- beta score heatmaps
+- dotplots (logFC vs FDR)
+- cross-cell-type comparison heatmaps
 
 ---
 
@@ -374,22 +364,6 @@ The included dataset demonstrates analysis of a multi-condition CRISPR screen ac
 - **Zero count sgRNAs:** 0% (perfect)
 - **Processing speed:** 180-190K reads/sec demultiplexing
 
-### Top Hits Examples
-
-**Keratinocyte Condition1 - Top Depleted:**
-- NFKB1 (logFC=-1.96, FDR=2.6e-04)
-- JUNB (logFC=-1.95, FDR=2.6e-04)
-- MDM2 (logFC=-1.87, FDR=2.6e-04)
-
-**Fibroblast Condition1 - Top Depleted:**
-- MMP2 (logFC=-1.86, FDR=5.5e-04)
-- CNN1 (logFC=-1.83, FDR=5.5e-04)
-- FN1 (logFC=-1.83, FDR=5.5e-04)
-
-**Endothelial Condition1 - Top Depleted:**
-- THY1 (logFC=-2.16, FDR=5.5e-04)
-- PECAM1 (logFC=-2.04, FDR=7.0e-04)
-- ITGB5 (logFC=-1.92, FDR=5.5e-04)
 
 ---
 
@@ -450,26 +424,6 @@ conditions:
 
 ---
 
-## 🆚 Why ctm-MageCK?
-
-### vs. Standard MAGeCK
-
-| Feature | Standard MAGeCK | ctm-MageCK |
-|---------|-----------------|------------|
-| Cell-type demultiplexing | ❌ Manual | ✅ Automated (O(1) speed) |
-| Multi-cell-type support | ❌ Separate runs | ✅ Integrated workflow |
-| Visualization suite | ❌ Basic | ✅ 62 publication-ready plots |
-| Cross-condition comparison | ❌ Manual | ✅ Automated heatmaps/overlays |
-| Cell-type specificity analysis | ❌ None | ✅ Built-in |
-
-### vs. CRISPRCloud/CRISPR-Analyzer
-
-- **Faster:** O(1) demultiplexing vs. O(n) string matching
-- **More comprehensive:** Both RRA and MLE in single workflow
-- **Better visualization:** Automated multi-panel figures
-- **Production-ready:** Handles 10M+ reads/sample routinely
-
----
 
 ## 📚 Citation
 
@@ -477,7 +431,7 @@ If you use ctm-MageCK in your research, please cite:
 
 **ctm-MageCK:**
 ```
-[Your publication here]
+[publication will be posted here]
 ```
 
 **MAGeCK (underlying algorithm):**
@@ -551,18 +505,7 @@ doi:10.1186/s13059-015-0843-6
 
 For questions, issues, or feature requests:
 - **GitHub Issues:** https://github.com/your-org/ctm-mageck/issues
-- **Email:** support@your-institution.edu
+- **Email:** so2716@cumc.columbia.edu
 
 ---
 
-## 📝 License
-
-MIT License - see LICENSE file for details.
-
----
-
-**ctm-MageCK v1.0.0** - Production-Ready Cell-Type-Specific CRISPR Screen Analysis
-*Ultra-fast demultiplexing + Gold-standard MAGeCK statistics*
-
-**Last Updated:** 2026-02-03
-**Maintained by:** [Can Ozcan / SRSP Lab / Columbia University]
