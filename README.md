@@ -1,4 +1,4 @@
-# ctm-MageCK: cell-type-multiplexed CRISPR screen analysis
+# CellMux-MageCK: cell-type-multiplexed CRISPR screen analysis
 
 **Version:** 1.0.0
 
@@ -6,7 +6,7 @@
 
 ## 🎯 Overview
 
-**ctm-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the  MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
+**CellMux-MageCK** is a computational pipeline for analyzing **pooled CRISPR knockout screens with cell-type-specific barcoding**. It combines ultra-fast hash-table demultiplexing with the  MAGeCK statistical framework to identify genes essential for cell viability or conferring resistance across multiple cell types and experimental conditions simultaneously.
 
 
 ### Workflow
@@ -50,8 +50,8 @@ conda create -n py37 python=3.7
 conda activate py37
 pip install mageck
 
-conda create -n ctm-mageck python=3.12
-conda activate ctm-mageck
+conda create -n CellMux-mageck python=3.12
+conda activate CellMux-mageck
 pip install numpy pandas matplotlib seaborn scipy pyyaml matplotlib-venn
 
 # 2. Prepare experiment configuration
@@ -98,8 +98,8 @@ python scripts/post_analysis_visualization_mle.py \
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/ctm-mageck.git
-cd ctm-mageck
+git clone https://github.com/your-org/CellMux-mageck.git
+cd CellMux-mageck
 
 # Create conda environment for MAGeCK (Python 3.7)
 conda create -n py37 python=3.7
@@ -110,8 +110,8 @@ pip install mageck
 mageck test --version
 
 # Create separate environment for pipeline scripts (Python 3.12)
-conda create -n ctm-mageck python=3.12
-conda activate ctm-mageck
+conda create -n CellMux-mageck python=3.12
+conda activate CellMux-mageck
 pip install numpy pandas matplotlib seaborn scipy pyyaml matplotlib-venn
 
 # Verify installation
@@ -427,9 +427,9 @@ conditions:
 
 ## 📚 Citation
 
-If you use ctm-MageCK in your research, please cite:
+If you use CellMux-MageCK in your research, please cite:
 
-**ctm-MageCK:**
+**CellMux-MageCK:**
 ```
 [publication will be posted here]
 ```
@@ -504,7 +504,7 @@ doi:10.1186/s13059-015-0843-6
 ## 👥 Support
 
 For questions, issues, or feature requests:
-- **GitHub Issues:** https://github.com/your-org/ctm-mageck/issues
+- **GitHub Issues:** https://github.com/your-org/CellMux-mageck/issues
 - **Email:** so2716@cumc.columbia.edu
 
 ---
